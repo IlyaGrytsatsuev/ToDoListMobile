@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ToDoList</string>
+    <string name="page_title">Мои дела</string>
+    <string name="hint_text">Что надо сделать... </string>
+    <string name="spinner_title">Важность</string>
+    <string name="save_button_string">СОХРАНИТЬ</string>
+    <string name="do_before_date">Сделать до</string>
+    <string name="delete">Удалить</string>
+
+
+
+
+</resources>
