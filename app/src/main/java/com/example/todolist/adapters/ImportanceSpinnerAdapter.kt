@@ -1,4 +1,4 @@
-package com.example.todolist
+package com.example.todolist.adapters
 
 import android.content.Context
 import android.graphics.Color
@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import com.example.todolist.R
+import com.example.todolist.utils.Importance
 
 class ImportanceSpinnerAdapter(context: Context, itemsList:List<String>) : ArrayAdapter<String>(context,0, itemsList){
 
@@ -20,8 +22,11 @@ class ImportanceSpinnerAdapter(context: Context, itemsList:List<String>) : Array
         val subText = view.findViewById<TextView>(R.id.subtitle)
 
         val item = getItem(position)
-
-        subText.text = item
+        if(item == Importance.HIGH.text){
+            subText.setTextColor(Color.parseColor("#FF3B30"))
+            subText.text = "!! $item"
+        }
+        else subText.text = item
         return view
 
     }

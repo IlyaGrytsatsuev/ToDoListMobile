@@ -1,7 +1,7 @@
-package com.example.todolist
+package com.example.todolist.callbacks
 
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
+import com.example.todolist.ui.*
 
 class RecyclerToEditCallback(val navController: NavController) : RecyclerOnClickCallBack {
      override fun onClick(id:Int) {

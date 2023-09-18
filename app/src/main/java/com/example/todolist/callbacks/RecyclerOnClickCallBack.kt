@@ -1,4 +1,4 @@
-package com.example.todolist
+package com.example.todolist.callbacks
 
 interface RecyclerOnClickCallBack {
 
