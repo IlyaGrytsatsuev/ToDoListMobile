@@ -3,6 +3,7 @@ package com.example.todolist.ui
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,123 +18,91 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.todolist.utils.Importance
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.delegates.EditRecyclerDelegate
 import com.example.todolist.R
-import com.example.todolist.adapters.ImportanceSpinnerAdapter
+import com.example.todolist.adapters.EditRecyclerAdapter
+import com.example.todolist.callbacks.EditToListCallback
 import com.example.todolist.db.ToDoItemEntity
+import com.example.todolist.delegates.DeleteDelegate
+import com.example.todolist.delegates.ImportanceSpinnerDelegate
+import com.example.todolist.delegates.TextEditDelegate
+import com.example.todolist.delegates.UntilDateDelegate
 import com.example.todolist.viewModel.DatabaseViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Calendar
+import javax.inject.Inject
+import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class ToDoItemFragment : Fragment() {
-    private val activityViewModel: DatabaseViewModel by viewModels()
+    private val viewModel: DatabaseViewModel by viewModels()
+    lateinit var recyclerView: RecyclerView
+    lateinit var adapter: EditRecyclerAdapter
     lateinit var navController: NavController
     lateinit var exitButton:ImageButton
     lateinit var saveButton: Button
-    lateinit var textEdit: TextInputEditText
-    lateinit var spinner: Spinner
-    lateinit var adapter: ArrayAdapter<String>
-    lateinit var toggle: SwitchMaterial
-    lateinit var dateText: TextView
-    lateinit var deleteButton: Button
+    lateinit var deleteFun: (item:ToDoItemEntity) -> Unit
     var item: ToDoItemEntity = ToDoItemEntity()
-    val calendar: Calendar = Calendar.getInstance()
-    @RequiresApi(Build.VERSION_CODES.N)
-    lateinit var datePicker: DatePickerDialog
+    var updated = false
+    lateinit var delegates : List<EditRecyclerDelegate>
 
-    val importanceList = listOf<String>(
-        Importance.NONE.text,
-        Importance.LOW.text, Importance.HIGH.text)
-
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view = inflater.inflate(R.layout.fragment_to_do_item, container, false)
         navController = findNavController()
-        spinner = view.findViewById(R.id.importance_spinner)
-        adapter = ImportanceSpinnerAdapter(requireContext(), importanceList)
-        spinner.adapter = adapter
-        toggle = view.findViewById(R.id.toggle)
-        dateText = view.findViewById(R.id.date)
-        exitButton = view.findViewById(R.id.close_button)
-
-        exitButton.setOnClickListener{
-            navController.popBackStack()
+        deleteFun = {
+            viewModel.deleteItem(item)
         }
-
-        deleteButton = view.findViewById(R.id.delete_button)
-        deleteButton.setOnClickListener {
-            activityViewModel.deleteItem(item)
-            navController.popBackStack()
-        }
-
-        saveButton = view.findViewById(R.id.save_button)
-        saveButton.setOnClickListener {
-            //item.text = textEdit.text.toString()
-            item.text = textEdit.text.toString()
-            item.importance = spinner.selectedItem.toString()
-            activityViewModel.addToDoItem(item)
-            navController.popBackStack()
-        }
+        delegates = listOf(TextEditDelegate(requireContext()),
+            ImportanceSpinnerDelegate(requireContext()) ,
+            UntilDateDelegate(requireContext()),
+            DeleteDelegate(requireContext(),
+                EditToListCallback(navController),
+                deleteFun))
+        recyclerView = view.findViewById(R.id.to_do_item_recycler)
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext(),
+                LinearLayoutManager.VERTICAL, false)
 
         val args: ToDoItemFragmentArgs by navArgs()
         var item_id :Int? = args.itemId
-        textEdit = view.findViewById(R.id.to_do_input)
         if(item_id != null) {
             if (item_id > -1){
-                activityViewModel.getItemById(item_id)
-                activityViewModel.currentItem.observe(viewLifecycleOwner){
+                viewModel.getItemById(item_id)
+                viewModel.currentItem.observe(viewLifecycleOwner){
+                    updated = true
                     item = it
-                    textEdit.setText(it.text)
-                    if(it.untilDate != null) {
-                        toggle.isChecked = true
-                        calendar.time = it.untilDate
-                        var day = calendar.get(Calendar.DAY_OF_MONTH)
-                        var monthString = getMonthString(calendar.get(Calendar.MONTH))
-                        dateText.text = "$day $monthString"
-                    }
-                    spinner.setSelection(
-                        when (item.importance) {
-                            Importance.LOW.text -> 1
-                            Importance.HIGH.text -> 2
-                            else -> 0
-                        })
-                }
-            }
-            var entity = ToDoItemEntity()
-            toggle.setOnCheckedChangeListener { _, isChecked ->
-                if(isChecked && item.untilDate == null) {
-                    //Log.d("text_copy", item.text)
-                    datePicker = DatePickerDialog(
-                        requireContext(),
-                        datePickerListenerFunc,
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    )
-                    datePicker.show()
+                    initializeRecycler(view)
+                    Log.d("text", item.text)
                 }
             }
         }
+        if(!updated) {
+            initializeRecycler(view)
+        }
+
         return view
     }
 
-    val datePickerListenerFunc =
-        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            dateText.text = "$dayOfMonth ${getMonthString(month)}"
-            dateText.visibility = View.VISIBLE
-            item.untilDate = calendar.time
+    fun initializeRecycler(view:View){
+        adapter = EditRecyclerAdapter(item, delegates)
+        recyclerView.adapter = adapter
+        exitButton = view.findViewById(R.id.close_button_collapsed)
+        exitButton.setOnClickListener {
+            navController.popBackStack()
+        }
+        saveButton = view.findViewById(R.id.save_button_collapsed)
+        saveButton.setOnClickListener {
+            Log.d("item", item.text)
+            Log.d("importance", item.importance)
+            viewModel.addToDoItem(item)
+            navController.popBackStack()
+        }
     }
-
-    fun getMonthString(monthNumber: Int): String {
-        val russianMonths = resources.getStringArray(R.array.months)
-        return russianMonths[monthNumber]
-    }
-
 
 }

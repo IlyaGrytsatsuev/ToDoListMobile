@@ -1,6 +1,7 @@
 package com.example.todolist.di
 
 import android.content.Context
+import android.content.res.Resources
 import androidx.room.Room
 import com.example.todolist.db.ToDoItemDao
 import com.example.todolist.db.ToDoItemEntity
@@ -32,8 +33,5 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideToDoItemEntity() = ToDoItemEntity()
-
-
-
 
 }

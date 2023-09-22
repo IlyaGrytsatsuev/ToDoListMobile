@@ -1,35 +1,29 @@
 package com.example.todolist.adapters
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.delegates.ListRecyclerDelegate
 import com.example.todolist.callbacks.RecyclerOnClickCallBack
 import com.example.todolist.db.ToDoItemEntity
-import com.example.todolist.repository.ToDoItemsRepository
-import com.example.todolist.R
-import javax.inject.Inject
 
-class ToDoItemsListAdapter(var callBack: RecyclerOnClickCallBack) : RecyclerView.Adapter<ToDoItemViewHolder>() {
+class ToDoItemsListAdapter(var callBack: RecyclerOnClickCallBack,
+                           private val delegates : List<ListRecyclerDelegate>)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    @Inject
-    lateinit var toDoItemsRepository: ToDoItemsRepository
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoItemViewHolder {
-        var layoutInflater = LayoutInflater.from(parent.context)
-        return ToDoItemViewHolder(
-            layoutInflater.inflate(
-                R.layout.to_do_item,
-                parent,
-                false
-            ), callBack )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return delegates[viewType].getViewHolder(parent, callBack)
     }
+
+    override fun getItemViewType(position: Int)
+    = delegates.indexOfFirst { delegate -> delegate.matchesDelegate(differ.currentList[position]) }
 
     override fun getItemCount() = differ.currentList.size
 
-    override fun onBindViewHolder(holder: ToDoItemViewHolder, position: Int) {
-        holder.onBind(differ.currentList[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        delegates[getItemViewType(position)].bindViewHolder(holder, differ.currentList[position])
     }
 
     private val differCallback = object : DiffUtil.ItemCallback<ToDoItemEntity>(){
@@ -44,5 +38,6 @@ class ToDoItemsListAdapter(var callBack: RecyclerOnClickCallBack) : RecyclerView
     }
 
     val differ = AsyncListDiffer(this, differCallback)
+
 
 }

@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todolist.delegates.ImportantDelegate
+import com.example.todolist.delegates.ListRecyclerDelegate
+import com.example.todolist.delegates.NonImportantDelegate
 import com.example.todolist.R
 import com.example.todolist.adapters.ToDoItemsListAdapter
 import com.example.todolist.callbacks.RecyclerToEditCallback
@@ -29,6 +31,7 @@ class ListFragment : Fragment() {
     lateinit var adapter: ToDoItemsListAdapter
     lateinit var addButton:FloatingActionButton
 
+    val adapterDelegates = listOf<ListRecyclerDelegate>(NonImportantDelegate(), ImportantDelegate())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,10 +41,10 @@ class ListFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_list, container, false)
         recyclerView = view.findViewById(R.id.to_do_items_list)
         layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
+        //recyclerView.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
         recyclerView.layoutManager = layoutManager
         navController = findNavController()
-        adapter = ToDoItemsListAdapter(RecyclerToEditCallback(navController))
+        adapter = ToDoItemsListAdapter(RecyclerToEditCallback(navController), adapterDelegates)
         activityViewModel.getToDoItems()
         activityViewModel.itemsList.observe(viewLifecycleOwner){
             adapter.differ.submitList(it)

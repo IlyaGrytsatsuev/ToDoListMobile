@@ -25,15 +25,8 @@ class ToDoItemViewHolder(var itemView: View, var callBack: RecyclerOnClickCallBa
             callBack.onClick(toDoItem.id)
         }
 
-        var completeIconId = when{
-            toDoItem.isComplete -> R.drawable.done_icon
-            toDoItem.importance == Importance.HIGH.text -> R.drawable.important_undone_icon
-            else -> R.drawable.undone_icon
-        }
-        completeIcon.setImageResource(completeIconId)
-
-        if(toDoItem.importance == Importance.HIGH.text)
-            importantIcon?.setImageResource(R.drawable.important_icon)
+        if(toDoItem.isComplete)
+            completeIcon.setImageResource(R.drawable.done_icon)
 
         itemText.text = toDoItem.text
     }
