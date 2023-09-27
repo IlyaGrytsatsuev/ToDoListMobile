@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="blue">#007AFF</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="light_blue_A200">#FF40C4FF</color>
@@ -11,6 +12,8 @@
     <color name="checked_track">#6cd9f9</color>
     <color name="unchecked_thumb">#FFFFFF</color>
     <color name="unchecked_track">#dfe6e6</color>
-
+    <color name="delete_swipe_color">#FF3B30</color>
+    <color name="done_swipe_color">#34C759</color>
+    <color name="grey">#dfe6e6</color>
 
 </resources>

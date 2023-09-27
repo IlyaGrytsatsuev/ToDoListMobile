@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.delegates.ListRecyclerDelegate
 import com.example.todolist.callbacks.RecyclerOnClickCallBack
 import com.example.todolist.db.ToDoItemEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ToDoItemsListAdapter(var callBack: RecyclerOnClickCallBack,
+class ToDoItemsListAdapter (var callBack: RecyclerOnClickCallBack,
                            private val delegates : List<ListRecyclerDelegate>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

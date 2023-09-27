@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="collapsedToolbarTextStyle">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textFontWeight">600</item>
+
+    </style>
+</resources>

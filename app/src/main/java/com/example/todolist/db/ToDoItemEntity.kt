@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Entity(tableName = "to_do_item" )
-class ToDoItemEntity (@PrimaryKey(autoGenerate = true)
+  data class ToDoItemEntity (@PrimaryKey(autoGenerate = true)
                           var id:Int = 0,
                           var text:String = "",
                           @ColumnInfo(name = "importance")
@@ -19,7 +19,6 @@ class ToDoItemEntity (@PrimaryKey(autoGenerate = true)
                           var isComplete:Boolean = false,
                           @ColumnInfo(name = "until_date")
                           var untilDate: Date? = null){
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -27,7 +26,7 @@ class ToDoItemEntity (@PrimaryKey(autoGenerate = true)
         other as ToDoItemEntity
 
         if (id != other.id) return false
-        if (text != other.text) return false
+        if (text.trim() != other.text.trim()) return false
         if (importance != other.importance) return false
         if (isComplete != other.isComplete) return false
         if (untilDate != other.untilDate) return false
@@ -35,15 +34,12 @@ class ToDoItemEntity (@PrimaryKey(autoGenerate = true)
         return true
     }
 
-    override fun hashCode(): Int {
-        var result = id
-        result = 31 * result + text.hashCode()
-        result = 31 * result + importance.hashCode()
-        result = 31 * result + isComplete.hashCode()
-        result = 31 * result + (untilDate?.hashCode() ?: 0)
-        return result
-    }
 }
+
+
+
+
+
 
 
 

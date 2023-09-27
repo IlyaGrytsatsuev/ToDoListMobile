@@ -20,6 +20,8 @@ class DatabaseViewModel @Inject constructor(private val repository: ToDoItemsRep
     val itemsList : LiveData<List<ToDoItemEntity>>
         get() = privateList
 
+    var oldItem : ToDoItemEntity = ToDoItemEntity()
+
 
     init{
         getToDoItems()
@@ -34,8 +36,9 @@ class DatabaseViewModel @Inject constructor(private val repository: ToDoItemsRep
     }
 
     fun getItemById(id:Int) = viewModelScope.launch {
-            repository.getItemById(id).collect{
+            repository.getItemById(id).collect {
                 privateCurrentItem.postValue(it)
+                oldItem = it.copy()
 //                Log.d("current_item_text", it.text)
             }
     }
@@ -44,6 +47,7 @@ class DatabaseViewModel @Inject constructor(private val repository: ToDoItemsRep
 
     fun addToDoItem(item : ToDoItemEntity) = viewModelScope.launch {
         repository.addItem(item)
+        getToDoItems()
     }
 
     fun deleteItem(item : ToDoItemEntity) = viewModelScope.launch {

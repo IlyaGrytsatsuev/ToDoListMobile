@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DemoTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimaryDark">#F7F6F2</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
+
+</resources>

@@ -8,6 +8,7 @@
     tools:context=".ui.ToDoItemFragment">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F7F6F2"
@@ -16,51 +17,51 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll"
             android:background="#F7F6F2"
             >
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#F7F6F2"
-            >
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="?attr/actionBarSize"
+                android:background="#F7F6F2"
+                >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/close_button_collapsed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/close_icon"
-                    android:background="#F7F6F2"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    ></androidx.appcompat.widget.AppCompatImageButton>
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/close_button_collapsed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/close_icon"
+                        android:background="#F7F6F2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="16dp"
+                        ></androidx.appcompat.widget.AppCompatImageButton>
 
-                <Button
-                    android:id="@+id/save_button_collapsed"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:gravity="top"
-                    android:fontFamily="@font/roboto_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="14sp"
-                    android:textFontWeight="500"
-                    android:textColor="#007AFF"
-                    android:text="@string/save_button_string"
-                    android:letterSpacing="0.01"
-                    ></Button>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.appcompat.widget.Toolbar>
+                    <Button
+                        android:id="@+id/save_button_collapsed"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:gravity="top"
+                        android:fontFamily="@font/roboto_regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="16dp"
+                        android:textSize="14sp"
+                        android:textFontWeight="500"
+                        android:textColor="@color/blue"
+                        android:text="@string/save_button_string"
+                        android:letterSpacing="0.01"
+                        ></Button>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView

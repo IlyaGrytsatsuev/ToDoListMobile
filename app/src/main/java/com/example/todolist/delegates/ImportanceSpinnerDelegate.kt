@@ -3,10 +3,10 @@ package com.example.todolist.delegates
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.ImportanceSpinnerViewHolder
-import com.example.todolist.adapters.TextEditViewHolder
 import com.example.todolist.db.ToDoItemEntity
 
 class ImportanceSpinnerDelegate(var context: Context) : EditRecyclerDelegate {
@@ -25,7 +25,7 @@ class ImportanceSpinnerDelegate(var context: Context) : EditRecyclerDelegate {
             ))
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: ToDoItemEntity) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
         (viewHolder as ImportanceSpinnerViewHolder).let { viewHolder.onBind(item, context) }
     }
 }

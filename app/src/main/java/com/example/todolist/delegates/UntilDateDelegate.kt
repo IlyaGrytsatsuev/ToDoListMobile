@@ -3,9 +3,9 @@ package com.example.todolist.delegates
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
-import com.example.todolist.adapters.TextEditViewHolder
 import com.example.todolist.adapters.UntilDateViewHolder
 import com.example.todolist.db.ToDoItemEntity
 
@@ -24,7 +24,7 @@ class UntilDateDelegate(var context: Context) : EditRecyclerDelegate {
             ), context)
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: ToDoItemEntity) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
         (viewHolder as UntilDateViewHolder).let{viewHolder.onBind(item)}
     }
 }

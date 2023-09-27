@@ -6,6 +6,10 @@
     <string name="save_button_string">СОХРАНИТЬ</string>
     <string name="do_before_date">Сделать до</string>
     <string name="delete">Удалить</string>
+    <string name="delete_snackbar">Удалено</string>\
+    <string name="cancel">Отменить</string>
+
+
 
     <string-array name="months">
         <item>января</item>

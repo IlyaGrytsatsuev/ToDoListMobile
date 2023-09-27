@@ -4,7 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.view.View
 import android.widget.TextView
-import android.widget.ToggleButton
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.db.ToDoItemEntity
@@ -18,23 +18,25 @@ class UntilDateViewHolder(itemView: View, var context: Context) : RecyclerView.V
     lateinit var datePicker: DatePickerDialog
 
 
-    fun onBind(item: ToDoItemEntity){
-        if(item.untilDate != null) {
+    fun onBind(item: MutableLiveData<ToDoItemEntity>){
+        if(item.value?.untilDate != null) {
                     toggle.isChecked = true
-                    calendar.time = item.untilDate
+                    calendar.time = item.value?.untilDate
                     var day = calendar.get(Calendar.DAY_OF_MONTH)
                     var monthString = getMonthString(calendar.get(Calendar.MONTH))
                     dateText.text = "$day $monthString"
         }
+        var tmp = item.value
         val datePickerListenerFunc =
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 dateText.text = "$dayOfMonth ${getMonthString(month)}"
                 dateText.visibility = View.VISIBLE
-                item.untilDate = calendar.time
+                tmp?.untilDate = calendar.time
+                item.postValue(tmp)
             }
 
         toggle.setOnCheckedChangeListener { _, isChecked ->
-                if(isChecked && item.untilDate == null) {
+                if(isChecked && item.value?.untilDate == null) {
                     //Log.d("text_copy", item.text)
                     datePicker = DatePickerDialog(
                         context,
@@ -44,7 +46,9 @@ class UntilDateViewHolder(itemView: View, var context: Context) : RecyclerView.V
                         calendar.get(Calendar.DAY_OF_MONTH)
                     )
                     datePicker.show()
-               }
+                }
+                else
+                    datePicker.hide()
             }
     }
 
