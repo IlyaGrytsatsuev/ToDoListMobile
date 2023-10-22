@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.todolist.utils.Importance
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -14,7 +15,7 @@ import javax.inject.Singleton
                           var id:Int = 0,
                           var text:String = "",
                           @ColumnInfo(name = "importance")
-                          var importance: String = "",
+                          var importance: String = Importance.NONE.text,
                           @ColumnInfo(name = "is_complete")
                           var isComplete:Boolean = false,
                           @ColumnInfo(name = "until_date")

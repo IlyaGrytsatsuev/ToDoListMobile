@@ -3,12 +3,12 @@ package com.example.todolist.delegates
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.DeleteViewHolder
 import com.example.todolist.callbacks.EditToListCallback
 import com.example.todolist.db.ToDoItemEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class DeleteDelegate(
     var context: Context,
@@ -31,7 +31,8 @@ class DeleteDelegate(
             ))
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
-        (viewHolder as DeleteViewHolder).let { viewHolder.onBind(item, callback, deleteFun) }
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableStateFlow<ToDoItemEntity>) {
+        (viewHolder as DeleteViewHolder).let { viewHolder.onBind(item, callback, deleteFun, context) }
     }
+
 }

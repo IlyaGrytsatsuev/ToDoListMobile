@@ -6,5 +6,6 @@ import com.example.todolist.ui.ToDoItemFragmentDirections
 class EditToListCallback(val navController: NavController) {
     fun onClick(){
         navController.popBackStack()
+
     }
 }

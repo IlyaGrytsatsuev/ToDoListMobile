@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.ImportanceSpinnerViewHolder
 import com.example.todolist.db.ToDoItemEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class ImportanceSpinnerDelegate(var context: Context) : EditRecyclerDelegate {
 
@@ -25,7 +26,7 @@ class ImportanceSpinnerDelegate(var context: Context) : EditRecyclerDelegate {
             ))
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableStateFlow<ToDoItemEntity>) {
         (viewHolder as ImportanceSpinnerViewHolder).let { viewHolder.onBind(item, context) }
     }
 }

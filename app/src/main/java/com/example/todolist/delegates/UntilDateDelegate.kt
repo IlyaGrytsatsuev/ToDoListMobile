@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.UntilDateViewHolder
 import com.example.todolist.db.ToDoItemEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class UntilDateDelegate(var context: Context) : EditRecyclerDelegate {
     override fun matchesDelegate(item: EditRecyclerDelegate): Boolean {
@@ -24,7 +25,7 @@ class UntilDateDelegate(var context: Context) : EditRecyclerDelegate {
             ), context)
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableStateFlow<ToDoItemEntity>) {
         (viewHolder as UntilDateViewHolder).let{viewHolder.onBind(item)}
     }
 }

@@ -1,5 +1,6 @@
 package com.example.todolist.ui
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +11,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -30,7 +35,11 @@ import com.example.todolist.delegates.TextEditDelegate
 import com.example.todolist.delegates.UntilDateDelegate
 import com.example.todolist.viewModel.DatabaseViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.yandex.authsdk.YandexAuthOptions
+import com.yandex.authsdk.YandexAuthSdk
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -42,10 +51,9 @@ class ToDoItemFragment : Fragment() {
     lateinit var exitButton:ImageButton
     lateinit var saveButton: Button
     lateinit var deleteFun: (item:ToDoItemEntity) -> Unit
-//    lateinit var olditem : ToDoItemEntity
 
 
-    var item: MutableLiveData<ToDoItemEntity> = MutableLiveData<ToDoItemEntity>()
+    var item: MutableStateFlow<ToDoItemEntity> = MutableStateFlow(ToDoItemEntity())
     var updated = false
     lateinit var delegates : List<EditRecyclerDelegate>
 
@@ -54,65 +62,75 @@ class ToDoItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.fragment_to_do_item, container, false)
+        val view = inflater.inflate(R.layout.fragment_to_do_item, container, false)
 
         navController = findNavController()
         deleteFun = {
-            item.value?.let { it1 -> viewModel.deleteItem(it1) }
+            viewModel.deleteItem(item.value)
         }
 
         recyclerView = view.findViewById(R.id.to_do_item_recycler)
         recyclerView.layoutManager =
-            LinearLayoutManager(requireContext(),
-                LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.VERTICAL, false
+            )
 
         val appBar: AppBarLayout = view.findViewById(R.id.appBar)
         appBar.elevation = 0f
-        recyclerView.setOnScrollChangeListener { _,_,scrollY,_,oldScrollY ->
+        recyclerView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             val scrollDelta = scrollY - oldScrollY
-            if(scrollDelta > 0 )
+            if (scrollDelta > 0)
                 appBar.elevation = 9f
             else
                 appBar.elevation = 0f
         }
+        saveButton = view.findViewById(R.id.save_button_collapsed)
+
 
         val args: ToDoItemFragmentArgs by navArgs()
-        var item_id :Int? = args.itemId
-        if(item_id != null) {
-            if (item_id > -1){
-                viewModel.getItemById(item_id)
-                updated = true
-                viewModel.currentItem.observe(viewLifecycleOwner){
-                    item.postValue(it)
-                    initializeRecycler(view)
-                    Log.d("text", viewModel.oldItem.text)
+        val item_id: Int = args.itemId
+        if (item_id > -1) {
+            viewModel.getItemById(item_id)
+            updated = true
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.currentItem.collect {
+                        item.value = it.copy()
+                        initializeRecycler(view)
+                        Log.d("equalityInitialOld", viewModel.oldItem.toString())
+                    }
                 }
             }
         }
-        if(!updated) {
-            viewModel.oldItem = ToDoItemEntity()
-            item.postValue(ToDoItemEntity())
+        if (!updated) {
+            saveButton.isClickable = false
+            saveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
             initializeRecycler(view)
         }
 
-
+        Log.d("lifecycle_edit", "onCreateView()")
         return view
     }
 
-    fun initializeRecycler(view:View){
-        var curItem = ToDoItemEntity()
-        saveButton = view.findViewById(R.id.save_button_collapsed)
+    private fun initializeRecycler(view:View){
+        lateinit var curItem :ToDoItemEntity
         delegates = listOf(TextEditDelegate(requireContext(), saveButton),
             ImportanceSpinnerDelegate(requireContext()) ,
             UntilDateDelegate(requireContext()),
             DeleteDelegate(requireContext(),
                 EditToListCallback(navController),
                 deleteFun))
-        if(!updated)
-            checkEquality(curItem)
-        item.observe(viewLifecycleOwner){
-            curItem = it
-            checkEquality(curItem)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                item.collect{
+                    Log.d("equalityOld", viewModel.oldItem.toString())
+                    curItem = it
+                    checkEquality(curItem)
+                }
+            }
         }
         adapter = EditRecyclerAdapter(item, delegates)
         recyclerView.adapter = adapter
@@ -121,22 +139,19 @@ class ToDoItemFragment : Fragment() {
             navController.popBackStack()
         }
         saveButton.setOnClickListener {
-            //Log.d("item", item.text)
-            //Log.d("importance", item.importance)
-            curItem.let { it1 -> viewModel.addToDoItem(it1) }
+            viewModel.addToDoItem(curItem)
             navController.popBackStack()
         }
-
     }
 
     fun checkEquality(curItem:ToDoItemEntity){
-        if(curItem == viewModel.oldItem){
-            Log.d("equality", "true")
+        if(curItem == viewModel.oldItem ||(curItem.text.isBlank() && !updated)){
+            Log.d("equality", "true, curItem = $curItem")
             saveButton.isClickable = false
             saveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
         }
         else {
-            Log.d("equality", "false")
+            Log.d("equality", "false, curItem = $curItem")
             saveButton.isClickable = true
             saveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
         }

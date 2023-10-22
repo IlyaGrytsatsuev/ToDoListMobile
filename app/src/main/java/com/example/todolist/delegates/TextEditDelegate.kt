@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.R
 import com.example.todolist.adapters.TextEditViewHolder
 import com.example.todolist.db.ToDoItemEntity
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TextEditDelegate(
     val context: Context,
@@ -28,7 +29,7 @@ class TextEditDelegate(
             ))
     }
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableLiveData<ToDoItemEntity>) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: MutableStateFlow<ToDoItemEntity>) {
         (viewHolder as TextEditViewHolder).let { viewHolder.onBind(item, context, saveButton) }
     }
 }

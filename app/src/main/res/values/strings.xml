@@ -8,6 +8,8 @@
     <string name="delete">Удалить</string>
     <string name="delete_snackbar">Удалено</string>\
     <string name="cancel">Отменить</string>
+    <string name="logIn">Войти</string>
+    <string name="logOut">Выйти</string>
 
 
 

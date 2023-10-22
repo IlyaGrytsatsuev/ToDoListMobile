@@ -8,6 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
+@Singleton
 class ToDoItemsRepository @Inject constructor(private val dao: ToDoItemDao) {
 
     fun getItemsList() = dao.getToDoItems()
@@ -17,7 +18,6 @@ class ToDoItemsRepository @Inject constructor(private val dao: ToDoItemDao) {
     suspend fun addItem(item : ToDoItemEntity) = dao.addItem(item)
 
     suspend fun deleteItem(item : ToDoItemEntity) = dao.deleteItem(item)
-
 
 
 }

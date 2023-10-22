@@ -6,11 +6,15 @@ import androidx.room.Room
 import com.example.todolist.db.ToDoItemDao
 import com.example.todolist.db.ToDoItemEntity
 import com.example.todolist.db.ToDoItemsDB
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttp
+import retrofit2.Retrofit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,6 +37,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideToDoItemEntity() = ToDoItemEntity()
+
+
 
 
 }
