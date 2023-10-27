@@ -2,16 +2,22 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f73185a99a61b56d6bdab6e9abcbe074",
+    "identityHash": "b3c50605b5e97d098146170b2bea3112",
     "entities": [
       {
         "tableName": "to_do_item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `text` TEXT NOT NULL, `importance` TEXT NOT NULL, `is_complete` INTEGER NOT NULL, `until_date` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `common_id` TEXT NOT NULL, `text` TEXT NOT NULL, `importance` TEXT NOT NULL, `is_complete` INTEGER NOT NULL, `until_date` INTEGER, `state` TEXT NOT NULL, `modified` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hash",
+            "columnName": "common_id",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -37,6 +43,18 @@
             "columnName": "until_date",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modified",
+            "columnName": "modified",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -52,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f73185a99a61b56d6bdab6e9abcbe074')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b3c50605b5e97d098146170b2bea3112')"
     ]
   }
 }

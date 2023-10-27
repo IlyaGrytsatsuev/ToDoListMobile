@@ -50,11 +50,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ListFragment : Fragment() {
 
-
-    var tokenStr: String = ""
-    var expiredDate : Long = 0
-    var isLoggedIn = false
-
+    private var tokenStr: String = ""
+    private var expiredDate : Long = 0
+    private var isLoggedIn = false
 
     private val activityViewModel: DatabaseViewModel by activityViewModels()
     @Inject
@@ -101,9 +99,7 @@ class ListFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         navController = findNavController()
         adapter = ToDoItemsListAdapter(RecyclerToEditCallback(navController), adapterDelegates)
-        //activityViewModel.addDemoToDos()
         activityViewModel.getToDoItems()
-
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 activityViewModel.itemsList.collect{
@@ -227,7 +223,7 @@ class ListFragment : Fragment() {
                        Log.d("networkList", "is blank")
                    } else {
                        setLoggedInButtonState()
-                       //activityViewModel.getItemsFromApi()
+                       activityViewModel.getItemsFromApi()
                        Log.d("networkList", "is not blank")
                    }
                }
