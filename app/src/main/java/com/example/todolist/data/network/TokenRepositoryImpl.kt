@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_info")
-class TokenRepositoryImpl (@ApplicationContext val context:Context): TokenRepository {
+class TokenRepositoryImpl @Inject constructor(@ApplicationContext val context:Context): TokenRepository {
 
     override suspend fun getToken() = OauthToken(
         context.dataStore.data

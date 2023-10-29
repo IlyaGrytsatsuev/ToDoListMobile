@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.domain.models.ToDoItemEntity
 import com.example.todolist.R
@@ -25,36 +26,18 @@ class TextEditViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         saveButton.setTextColor(ContextCompat.getColor(context, R.color.grey))
         saveButton.isClickable = false
         //var oldText = item.value.text
-        textEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        textEdit.addTextChangedListener {
+            if (it.isNullOrBlank()) {
+                saveButton.setTextColor(ContextCompat.getColor(context, R.color.grey))
+                saveButton.isClickable = false
+            } else {
+                var tmp = item.value.copy()
+                tmp.text = it.toString().trim()
+                item.value = tmp
+
+                Log.d("equalityChanged", "textChanged = ${item.value.text}")
             }
+        }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if (s.isNullOrBlank()) {
-                    saveButton.setTextColor(ContextCompat.getColor(context, R.color.grey))
-                    saveButton.isClickable = false
-                } else {
-                    var tmp = item.value.copy()
-                    tmp.text = s.toString().trim()
-                    item.value = tmp
-
-                    Log.d("equalityChanged", "textChanged = ${item.value.text}")
-
-                }
-//                    when {
-//                        item.value?.text == oldText -> {
-//                            saveButton.setTextColor(ContextCompat.getColor(context, R.color.grey))
-//                            saveButton.isClickable = false
-//                        }
-//                        else -> {
-//                            saveButton.setTextColor(ContextCompat.getColor(context, R.color.blue))
-//                            saveButton.isClickable = true
-//                        }
-//                    }
-            }
-        })
     }
 }

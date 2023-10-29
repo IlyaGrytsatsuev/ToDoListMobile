@@ -75,49 +75,41 @@ class ListFragment : Fragment() {
 
     private lateinit var  adapterDelegates :List<ListRecyclerDelegate>
 
+    private lateinit var view: View
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        var view = inflater.inflate(R.layout.fragment_list, container, false)
-        Log.d("lifecycle", "onCreateView")
+    ): View {
+        view = inflater.inflate(R.layout.fragment_list, container, false)
         logInButton = view.findViewById(R.id.logIn_Button)
-        checkTokenDataStore()
-        authOptions = YandexAuthOptions(requireContext(), true)
-        sdk = YandexAuthSdk(requireContext(), authOptions)
-        loginOptionsBuilder = YandexAuthLoginOptions.Builder()
-        authIntent = sdk.createLoginIntent(loginOptionsBuilder.build())
-        adapterDelegates = listOf(
-            NonImportantDelegate(requireContext()),
-            ImportantDelegate(requireContext())
-        )
-        recyclerView = view.findViewById(R.id.to_do_items_list)
-        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        recyclerView.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
-        recyclerView.layoutManager = layoutManager
-        navController = findNavController()
-        adapter = ToDoItemsListAdapter(RecyclerToEditCallback(navController), adapterDelegates)
-        activityViewModel.getToDoItems()
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                activityViewModel.itemsList.collect{
-                    adapter.differ.submitList(it)
-                }
-            }
-        }
-
-        recyclerView.adapter = adapter
-
         addButton = view.findViewById(R.id.add_button)
         addButton.setOnClickListener {
             navController.navigate(R.id.action_listFragment_to_toDoItemFragment)
         }
+        initializeAuthIntent()
+        setUpRecycler()
+        checkTokenDataStore()
+        activityViewModel.getToDoItems()
+        setUpListObserver()
+        setUpListInteractionFuncs()
+        setUpSwipeGestures()
+        return view
+    }
 
+    private fun setUpSwipeGestures(){
+        swipeGesture = SwipeGesture(requireContext())
+        swipeGesture.rightSwipeListener = setCompleteFun
+        swipeGesture.leftSwipeListener = deleteFun
+        swipeGesture.isCompleteListener = isCompleteCheck
 
+        val itemTouchHelper = ItemTouchHelper(swipeGesture)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+    private fun setUpListInteractionFuncs(){
         setCompleteFun = { position ->
             val item = adapter.differ.currentList[position]
             Log.d("Item_text", item.text)
@@ -138,19 +130,36 @@ class ListFragment : Fragment() {
             val item = adapter.differ.currentList[position]
             item.isComplete
         }
-
-
-        swipeGesture = SwipeGesture(requireContext())
-        swipeGesture.rightSwipeListener = setCompleteFun
-        swipeGesture.leftSwipeListener = deleteFun
-        swipeGesture.isCompleteListener = isCompleteCheck
-
-        val itemTouchHelper = ItemTouchHelper(swipeGesture)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-
-        return view
     }
+    private fun setUpListObserver(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                activityViewModel.itemsList.collect{
+                    adapter.differ.submitList(it)
+                }
+            }
+        }
+    }
+    private fun setUpRecycler(){
+        adapterDelegates = listOf(
+            NonImportantDelegate(requireContext()),
+            ImportantDelegate(requireContext())
+        )
+        recyclerView = view.findViewById(R.id.to_do_items_list)
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
+        recyclerView.layoutManager = layoutManager
+        navController = findNavController()
+        adapter = ToDoItemsListAdapter(RecyclerToEditCallback(navController), adapterDelegates)
+        recyclerView.adapter = adapter
 
+    }
+    private fun initializeAuthIntent(){
+        authOptions = YandexAuthOptions(requireContext(), true)
+        sdk = YandexAuthSdk(requireContext(), authOptions)
+        loginOptionsBuilder = YandexAuthLoginOptions.Builder()
+        authIntent = sdk.createLoginIntent(loginOptionsBuilder.build())
+    }
     override fun onPause() {
         super.onPause()
         saveAuthInf()

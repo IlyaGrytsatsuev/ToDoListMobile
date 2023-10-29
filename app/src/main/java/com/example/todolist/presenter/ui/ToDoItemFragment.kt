@@ -50,18 +50,19 @@ class ToDoItemFragment : Fragment() {
     private var updated = false
     lateinit var delegates : List<EditRecyclerDelegate>
 
+    private lateinit var view: View
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_to_do_item, container, false)
-
+    ): View {
+        view = inflater.inflate(R.layout.fragment_to_do_item, container, false)
         navController = findNavController()
         deleteFun = {
             viewModel.deleteItem(item.value)
         }
-
+        saveButton = view.findViewById(R.id.save_button_collapsed)
         recyclerView = view.findViewById(R.id.to_do_item_recycler)
         recyclerView.layoutManager =
             LinearLayoutManager(
@@ -69,18 +70,13 @@ class ToDoItemFragment : Fragment() {
                 LinearLayoutManager.VERTICAL, false
             )
 
-        val appBar: AppBarLayout = view.findViewById(R.id.appBar)
-        appBar.elevation = 0f
-        recyclerView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
-            val scrollDelta = scrollY - oldScrollY
-            if (scrollDelta > 0)
-                appBar.elevation = 9f
-            else
-                appBar.elevation = 0f
-        }
-        saveButton = view.findViewById(R.id.save_button_collapsed)
+        setUpAppBarElevationWhileScroll()
+        initializeEditOrAddFragment()
 
+        return view
+    }
 
+    private fun initializeEditOrAddFragment(){
         val args: ToDoItemFragmentArgs by navArgs()
         val item_id: Int = args.itemId
         if (item_id > -1) {
@@ -102,13 +98,21 @@ class ToDoItemFragment : Fragment() {
             saveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
             initializeRecycler(view)
         }
-
-        Log.d("lifecycle_edit", "onCreateView()")
-        return view
+    }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun setUpAppBarElevationWhileScroll(){
+        val appBar: AppBarLayout = view.findViewById(R.id.appBar)
+        appBar.elevation = 0f
+        recyclerView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            val scrollDelta = scrollY - oldScrollY
+            if (scrollDelta > 0)
+                appBar.elevation = 9f
+            else
+                appBar.elevation = 0f
+        }
     }
 
-    private fun initializeRecycler(view:View){
-        lateinit var curItem :ToDoItemEntity
+    private fun initializeDelegates(){
         delegates = listOf(
             TextEditDelegate(requireContext(), saveButton),
             ImportanceSpinnerDelegate(requireContext()) ,
@@ -117,7 +121,9 @@ class ToDoItemFragment : Fragment() {
                 EditToListCallback(navController),
                 deleteFun)
         )
-
+    }
+    private fun initializeRecycler(view:View){
+        lateinit var curItem :ToDoItemEntity
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 item.collect{
@@ -127,6 +133,7 @@ class ToDoItemFragment : Fragment() {
                 }
             }
         }
+        initializeDelegates()
         adapter = EditRecyclerAdapter(item, delegates)
         recyclerView.adapter = adapter
         exitButton = view.findViewById(R.id.close_button_collapsed)
