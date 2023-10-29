@@ -1,21 +1,17 @@
 package com.example.todolist.di
 
 import android.content.Context
-import android.content.res.Resources
 import androidx.room.Room
-import com.example.todolist.db.ToDoItemDao
-import com.example.todolist.db.ToDoItemEntity
-import com.example.todolist.db.ToDoItemsDB
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.todolist.data.db.ToDoItemDao
+import com.example.todolist.data.db.ToDoItemsDB
+import com.example.todolist.data.repository.DatabaseRepositoryImpl
+import com.example.todolist.domain.models.ToDoItemEntity
+import com.example.todolist.domain.repository.DatabaseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttp
-import retrofit2.Retrofit
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
@@ -38,7 +34,10 @@ object DatabaseModule {
     @Singleton
     fun provideToDoItemEntity() = ToDoItemEntity()
 
-
-
+    @Singleton
+    @Provides
+    fun provideRepository(dao: ToDoItemDao) : DatabaseRepository{
+        return DatabaseRepositoryImpl(dao)
+    }
 
 }

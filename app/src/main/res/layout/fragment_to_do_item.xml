@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#F7F6F2"
-    tools:context=".ui.ToDoItemFragment">
+    tools:context=".presenter.ui.ToDoItemFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
