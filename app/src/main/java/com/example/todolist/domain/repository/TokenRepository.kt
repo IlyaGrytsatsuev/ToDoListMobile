@@ -4,6 +4,8 @@ import android.media.session.MediaSession.Token
 import com.example.todolist.domain.models.OauthToken
 
 interface TokenRepository {
+
+    var tokenObj:OauthToken
     suspend fun getToken():OauthToken
     suspend fun saveToken(tokenObj: OauthToken)
     suspend fun deleteToken()

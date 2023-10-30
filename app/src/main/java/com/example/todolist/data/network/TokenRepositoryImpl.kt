@@ -16,11 +16,17 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_info")
-class TokenRepositoryImpl @Inject constructor(@ApplicationContext val context:Context): TokenRepository {
+class TokenRepositoryImpl @Inject constructor(@ApplicationContext val context:Context,
+                                              override  var tokenObj: OauthToken = OauthToken("")
+): TokenRepository {
 
-    override suspend fun getToken() = OauthToken(
-        context.dataStore.data
-            .map{ it[Constants.TOKEN_PREF] ?: "" }.firstOrNull()?:"")
+
+    override suspend fun getToken(): OauthToken {
+        tokenObj = OauthToken(
+            context.dataStore.data
+                .map{ it[Constants.TOKEN_PREF] ?: "" }.firstOrNull()?:"")
+        return tokenObj
+    }
 
 
     override suspend fun saveToken(tokenObj:OauthToken){

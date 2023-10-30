@@ -6,7 +6,8 @@
     <string name="save_button_string">СОХРАНИТЬ</string>
     <string name="do_before_date">Сделать до</string>
     <string name="delete">Удалить</string>
-    <string name="delete_snackbar">Удалено</string>\
+    <string name="delete_snackbar">Удалено</string>
+    <string name="db_exception">Не удалось выполнить операцию</string>
     <string name="cancel">Отменить</string>
     <string name="logIn">Войти</string>
     <string name="logOut">Выйти</string>

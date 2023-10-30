@@ -48,24 +48,23 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ListFragment : Fragment() {
+class ListFragment  : Fragment() {
 
     private var tokenObj: OauthToken = OauthToken("")
     private var expiredDate : Long = 0
     private var isLoggedIn = false
     private val activityViewModel: DataViewModel by activityViewModels()
-    @Inject
-    lateinit var tokenManager: TokenRepositoryImpl
-    lateinit var recyclerView: RecyclerView
-    lateinit var layoutManager: LinearLayoutManager
-    lateinit var navController: NavController
-    lateinit var adapter: ToDoItemsListAdapter
-    lateinit var addButton: FloatingActionButton
-    lateinit var logInButton: Button
-    lateinit var setCompleteFun: (position: Int) -> Unit
-    lateinit var deleteFun: (position: Int) -> Unit
-    lateinit var isCompleteCheck: (position: Int) -> Boolean
-    lateinit var swipeGesture: SwipeGesture
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var navController: NavController
+    private lateinit var adapter: ToDoItemsListAdapter
+    private lateinit var addButton: FloatingActionButton
+    private lateinit var logInButton: Button
+    private lateinit var setCompleteFun: (position: Int) -> Unit
+    private lateinit var deleteFun: (position: Int) -> Unit
+    private lateinit var isCompleteCheck: (position: Int) -> Boolean
+    private lateinit var swipeGesture: SwipeGesture
 
     private var yandexAuthToken: YandexAuthToken = YandexAuthToken("", 1)
     private lateinit var authOptions: YandexAuthOptions
@@ -73,7 +72,7 @@ class ListFragment : Fragment() {
     private lateinit var loginOptionsBuilder: YandexAuthLoginOptions.Builder
     private lateinit var authIntent: Intent
 
-    private lateinit var  adapterDelegates :List<ListRecyclerDelegate>
+    private lateinit var adapterDelegates: List<ListRecyclerDelegate>
 
     private lateinit var view: View
 
@@ -97,9 +96,34 @@ class ListFragment : Fragment() {
         setUpListObserver()
         setUpListInteractionFuncs()
         setUpSwipeGestures()
+        setUpDbErrorObserver()
         return view
     }
 
+    private fun setUpDbErrorObserver(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                activityViewModel.isExceptionThrown.collect{
+                    if(it)
+                        showExceptionSnackBar()
+                }
+            }
+        }
+    }
+
+    private fun showExceptionSnackBar(){
+        val snackbar = Snackbar.make(view,
+            requireContext().getString(R.string.db_exception),
+            Snackbar.LENGTH_SHORT)
+
+        val snackbarView = snackbar.view
+        val snackbarTextView : TextView
+                = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
+        snackbarTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+        snackbar.show()
+        activityViewModel.setExceptionNotThrown()
+    }
     private fun setUpSwipeGestures(){
         swipeGesture = SwipeGesture(requireContext())
         swipeGesture.rightSwipeListener = setCompleteFun
@@ -159,11 +183,6 @@ class ListFragment : Fragment() {
         sdk = YandexAuthSdk(requireContext(), authOptions)
         loginOptionsBuilder = YandexAuthLoginOptions.Builder()
         authIntent = sdk.createLoginIntent(loginOptionsBuilder.build())
-    }
-    override fun onPause() {
-        super.onPause()
-        saveAuthInf()
-        Log.d("lifecycle", "onPause")
     }
 
     private fun showDeleteSnackBar(view: View, item: ToDoItemEntity){
@@ -231,6 +250,7 @@ class ListFragment : Fragment() {
                             Log.d("networkList", "is blank")
                         } else {
                             setLoggedInButtonState()
+                            activityViewModel.getItemsFromApi()
                             Log.d("networkList", "is not blank")
                         }
                     }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -31,6 +32,7 @@ import com.example.todolist.presenter.delegates.TextEditDelegate
 import com.example.todolist.presenter.delegates.UntilDateDelegate
 import com.example.todolist.presenter.viewModel.DataViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -38,14 +40,12 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ToDoItemFragment : Fragment() {
     private val viewModel: DataViewModel by viewModels()
-    lateinit var recyclerView: RecyclerView
-    lateinit var adapter: EditRecyclerAdapter
-    lateinit var navController: NavController
-    lateinit var exitButton:ImageButton
-    lateinit var saveButton: Button
-    lateinit var deleteFun: (item:ToDoItemEntity) -> Unit
-
-
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: EditRecyclerAdapter
+    private lateinit var navController: NavController
+    private lateinit var exitButton:ImageButton
+    private lateinit var saveButton: Button
+    private lateinit var deleteFun: (item:ToDoItemEntity) -> Unit
     var item: MutableStateFlow<ToDoItemEntity> = MutableStateFlow(ToDoItemEntity())
     private var updated = false
     lateinit var delegates : List<EditRecyclerDelegate>
@@ -72,8 +72,33 @@ class ToDoItemFragment : Fragment() {
 
         setUpAppBarElevationWhileScroll()
         initializeEditOrAddFragment()
-
+        setUpDbErrorObserver()
         return view
+    }
+
+    private fun setUpDbErrorObserver(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+               viewModel.isExceptionThrown.collect{
+                    if(it)
+                        showExceptionSnackBar()
+                }
+            }
+        }
+    }
+
+    private fun showExceptionSnackBar(){
+        val snackbar = Snackbar.make(view,
+            requireContext().getString(R.string.db_exception),
+            Snackbar.LENGTH_SHORT)
+
+        val snackbarView = snackbar.view
+        val snackbarTextView : TextView
+                = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text)
+        snackbarTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+        snackbarView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+        snackbar.show()
+        viewModel.setExceptionNotThrown()
     }
 
     private fun initializeEditOrAddFragment(){
@@ -146,7 +171,7 @@ class ToDoItemFragment : Fragment() {
         }
     }
 
-    fun checkEquality(curItem:ToDoItemEntity){
+    private fun checkEquality(curItem:ToDoItemEntity){
         if(curItem == viewModel.oldItem ||(curItem.text.isBlank() && !updated)){
             Log.d("equality", "true, curItem = $curItem")
             saveButton.isClickable = false

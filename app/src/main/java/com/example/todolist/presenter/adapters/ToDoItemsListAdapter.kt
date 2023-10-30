@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.domain.models.ToDoItemEntity
 import com.example.todolist.presenter.callbacks.RecyclerOnClickCallBack
 import com.example.todolist.presenter.delegates.ListRecyclerDelegate
+import javax.inject.Inject
 
 class ToDoItemsListAdapter (
     private var callBack: RecyclerOnClickCallBack,
