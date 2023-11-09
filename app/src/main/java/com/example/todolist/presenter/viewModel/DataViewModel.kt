@@ -7,27 +7,21 @@ import androidx.lifecycle.viewModelScope
 import com.example.todolist.domain.models.OauthToken
 import com.example.todolist.domain.models.ToDoItemEntity
 import com.example.todolist.domain.usecases.AddToDoItem
+import com.example.todolist.domain.usecases.CreateAppPackageInDisk
 import com.example.todolist.domain.usecases.DeleteToDoItemFromDB
 import com.example.todolist.domain.usecases.GetItemsListFromApi
 import com.example.todolist.domain.usecases.GetOAuthToken
 import com.example.todolist.domain.usecases.GetToDoItemByIdFromDB
 import com.example.todolist.domain.usecases.GetToDoItemsFromDB
 import com.example.todolist.domain.usecases.SaveOAuthToken
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okio.IOException
 import java.lang.Exception
 import javax.inject.Inject
 
-@HiltViewModel
-class DataViewModel @Inject
-constructor(
-            @ApplicationContext private val context: Context,
+class DataViewModel (
             private val getToDoItemFromDB: GetToDoItemsFromDB,
             private val getToDoItemByIdFromDB: GetToDoItemByIdFromDB,
             private val addToDoItemFromDB: AddToDoItem,
@@ -35,7 +29,8 @@ constructor(
             private val getOAuthToken: GetOAuthToken,
             private val saveOauthToken: SaveOAuthToken,
             private val deleteOAuthToken: GetOAuthToken,
-            private val getItemsListFromApi: GetItemsListFromApi
+            private val getItemsListFromApi: GetItemsListFromApi,
+            private val createAppPackageInDisk: CreateAppPackageInDisk
 
 ) : ViewModel() {
 
@@ -58,12 +53,13 @@ constructor(
 
     val token : StateFlow<OauthToken> = privateToken
 
-    var oldItem : ToDoItemEntity = ToDoItemEntity()
+    var oldItem : ToDoItemEntity = ToDoItemEntity()//todo stateflow
 
 
     init{
         getToDoItems()
     }
+
 
     fun getToDoItems() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -156,6 +152,12 @@ constructor(
         }
         catch (e:Exception){
             Log.d("networkList", "${e.message}")
+        }
+    }
+
+    private fun createAppFolderInDisk(){
+        viewModelScope.launch {
+            createAppPackageInDisk.execute()
         }
     }
 

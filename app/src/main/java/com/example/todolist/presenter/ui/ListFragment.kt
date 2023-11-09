@@ -1,5 +1,6 @@
 package com.example.todolist.presenter.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
@@ -31,29 +33,30 @@ import com.example.todolist.presenter.delegates.ImportantDelegate
 import com.example.todolist.presenter.delegates.ListRecyclerDelegate
 import com.example.todolist.presenter.delegates.NonImportantDelegate
 import com.example.todolist.data.network.TokenRepositoryImpl
+import com.example.todolist.di.ToDoListApplication
 import com.example.todolist.domain.models.OauthToken
 import com.example.todolist.utils.SwipeGesture
 import com.example.todolist.presenter.viewModel.DataViewModel
+import com.example.todolist.presenter.viewModel.DataViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.yandex.authsdk.YandexAuthLoginOptions
 import com.yandex.authsdk.YandexAuthOptions
 import com.yandex.authsdk.YandexAuthSdk
 import com.yandex.authsdk.YandexAuthToken
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-@AndroidEntryPoint
 class ListFragment  : Fragment() {
 
     private var tokenObj: OauthToken = OauthToken("")
     private var expiredDate : Long = 0
     private var isLoggedIn = false
-    private val activityViewModel: DataViewModel by activityViewModels()
+
+    val activityViewModel: DataViewModel by activityViewModels()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutManager: LinearLayoutManager
@@ -75,7 +78,6 @@ class ListFragment  : Fragment() {
     private lateinit var adapterDelegates: List<ListRecyclerDelegate>
 
     private lateinit var view: View
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(

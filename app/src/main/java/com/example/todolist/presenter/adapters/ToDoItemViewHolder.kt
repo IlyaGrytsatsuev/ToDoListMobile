@@ -22,6 +22,7 @@ class ToDoItemViewHolder(var itemView: View,
     private var itemText : TextView
     = itemView.findViewById(R.id.item_text)
 
+
     fun onBind(toDoItem: ToDoItemEntity, context:Context) {
 
         itemView.setOnClickListener {

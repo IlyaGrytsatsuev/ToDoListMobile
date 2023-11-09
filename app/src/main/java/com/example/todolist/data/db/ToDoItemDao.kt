@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ToDoItemDao {
     @Query("select * from to_do_item")
-    fun getToDoItems() : Flow<MutableList<ToDoItemEntity>>
+    suspend fun getToDoItems() : MutableList<ToDoItemEntity>
     @Query("select * from to_do_item where id = :id")
     fun getItemById(id:Int) : Flow<ToDoItemEntity>
     @Upsert

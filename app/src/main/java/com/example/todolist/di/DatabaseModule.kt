@@ -7,37 +7,32 @@ import com.example.todolist.data.db.ToDoItemsDB
 import com.example.todolist.data.repository.DatabaseRepositoryImpl
 import com.example.todolist.domain.models.ToDoItemEntity
 import com.example.todolist.domain.repository.DatabaseRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+
 
 @Module
-@InstallIn(SingletonComponent::class)
-object DatabaseModule {
+interface DatabaseModule {
 
-    @Provides
-    @Singleton
-    fun provideDB(@ApplicationContext context: Context)
-    : ToDoItemsDB = Room.databaseBuilder(context,
-        ToDoItemsDB::class.java,
-        "to_do_list_db")
-        .build()
+    @Binds
+    fun provideRepository(databaseRepositoryImpl: DatabaseRepositoryImpl): DatabaseRepository
 
-    @Provides
-    @Singleton
-    fun provideDao(db : ToDoItemsDB): ToDoItemDao = db.getDao()
+    companion object {
+        @Provides
+        fun provideDB(context: Context)
+                : ToDoItemsDB = Room.databaseBuilder(
+            context,
+            ToDoItemsDB::class.java,
+            "to_do_list_db"
+        )
+            .build()
 
-    @Provides
-    @Singleton
-    fun provideToDoItemEntity() = ToDoItemEntity()
+        @Provides
+        fun provideDao(db: ToDoItemsDB): ToDoItemDao = db.getDao()
 
-    @Singleton
-    @Provides
-    fun provideRepository(dao: ToDoItemDao) : DatabaseRepository{
-        return DatabaseRepositoryImpl(dao)
+        @Provides
+        fun provideToDoItemEntity() = ToDoItemEntity()
+
     }
-
 }

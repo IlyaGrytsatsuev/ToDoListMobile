@@ -12,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -33,20 +34,18 @@ import com.example.todolist.presenter.delegates.UntilDateDelegate
 import com.example.todolist.presenter.viewModel.DataViewModel
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class ToDoItemFragment : Fragment() {
-    private val viewModel: DataViewModel by viewModels()
+    private val viewModel: DataViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EditRecyclerAdapter
     private lateinit var navController: NavController
     private lateinit var exitButton:ImageButton
     private lateinit var saveButton: Button
     private lateinit var deleteFun: (item:ToDoItemEntity) -> Unit
-    var item: MutableStateFlow<ToDoItemEntity> = MutableStateFlow(ToDoItemEntity())
+    var item: MutableStateFlow<ToDoItemEntity> = MutableStateFlow(ToDoItemEntity())//todo lambda
     private var updated = false
     lateinit var delegates : List<EditRecyclerDelegate>
 

@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'dagger.hilt.android.plugin'
+//    id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id("androidx.navigation.safeargs.kotlin")
 
@@ -70,8 +70,11 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.7.2'
     implementation 'androidx.fragment:fragment-ktx:1.6.1'
     //Dagger Hilt
-    implementation "com.google.dagger:hilt-android:2.44.2"
-    kapt "com.google.dagger:hilt-compiler:2.44.2"
+//    implementation "com.google.dagger:hilt-android:2.44.2"
+//    kapt "com.google.dagger:hilt-compiler:2.44.2"
+
+    implementation 'com.google.dagger:dagger:2.44.2'
+    kapt 'com.google.dagger:dagger-compiler:2.44.2'
     //Room
     implementation 'androidx.room:room-runtime:2.5.2'
     kapt 'androidx.room:room-compiler:2.5.2'

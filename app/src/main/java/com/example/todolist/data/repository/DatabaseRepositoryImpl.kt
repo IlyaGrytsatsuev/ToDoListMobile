@@ -6,9 +6,10 @@ import com.example.todolist.domain.repository.DatabaseRepository
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
-class DatabaseRepositoryImpl (private val dao: ToDoItemDao) : DatabaseRepository {
+class DatabaseRepositoryImpl @Inject
+constructor(private val dao: ToDoItemDao) : DatabaseRepository {
     override suspend fun getItemsList() : List<ToDoItemEntity>
-    = dao.getToDoItems().firstOrNull() ?: emptyList()
+    = dao.getToDoItems()
 
     override suspend fun getItemById(id:Int): ToDoItemEntity
     = dao.getItemById(id).firstOrNull() ?: ToDoItemEntity()
